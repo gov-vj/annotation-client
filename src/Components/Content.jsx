@@ -21,13 +21,13 @@ export class Content extends React.Component {
     handleTokenChange() {
         const form = document.getElementById('content-form');
         const formData = new FormData(form);
-        const token = formData.get('tokens');
+        const tokens = formData.getAll('tokens');
         fetch(URLConstant.TOKEN_SAVE, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({token})
+            body: JSON.stringify({tokens})
         }).catch(err => console.log(err));
     }
 
@@ -53,7 +53,7 @@ export class Content extends React.Component {
                             <input
                                 id={`token${tokenId}`}
                                 name="tokens"
-                                type="radio"
+                                type="checkbox"
                                 value={`token${tokenId}`}
                                 onChange={this.handleTokenChange}/>
                             <label htmlFor={`token${tokenId}`} className="token-label">{match}</label>
@@ -68,8 +68,8 @@ export class Content extends React.Component {
         this.setState({tokenizedContent});
     }
 
-    restoreTokenState({token}) {
-        token && (document.getElementById(token).checked = true);
+    restoreTokenState({tokens}) {
+        tokens && (tokens.forEach(token => document.getElementById(token).checked = true));
     }
 
     componentDidMount() {
