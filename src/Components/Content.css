@@ -1,0 +1,7 @@
+input {
+    display: none;
+}
+
+:checked + label {
+    color: goldenrod;
+}
