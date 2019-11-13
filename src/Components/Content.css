@@ -1,7 +1,7 @@
-input {
+.hidden-input {
     display: none;
 }
 
-:checked + label {
+:checked + .token-label {
     color: goldenrod;
 }

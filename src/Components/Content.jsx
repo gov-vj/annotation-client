@@ -6,6 +6,7 @@ export class Content extends React.Component {
     constructor(props) {
         super(props);
         this.tokenizedContent = this.tokenizedContent.bind(this);
+        this.handleTokenChange = this.handleTokenChange.bind(this);
         this.state = {
             tokenizedContent: '',
         };
@@ -18,11 +19,15 @@ export class Content extends React.Component {
         .catch(error => console.log(error));
     }
 
+    getTokenRelativeUrl() {
+        return this.props.match.params.isMultiToken === "false" ? "/single" : "/multi";
+    }
+
     handleTokenChange() {
         const form = document.getElementById('content-form');
         const formData = new FormData(form);
         const tokens = formData.getAll('tokens');
-        fetch(URLConstant.TOKEN_SAVE, {
+        fetch(URLConstant.TOKEN_SAVE + this.getTokenRelativeUrl(), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -42,6 +47,7 @@ export class Content extends React.Component {
                 regex.lastIndex++;
             }
 
+            const inputType = this.props.match.params.isMultiToken === "false" ? "radio" : "checkbox";
             // The result can be accessed through the `m`-variable.
             m.forEach((match, groupIndex) => {
                 if (groupIndex === 0) {
@@ -52,8 +58,9 @@ export class Content extends React.Component {
                         <span key={tokenId}>
                             <input
                                 id={`token${tokenId}`}
+                                className="hidden-input"
                                 name="tokens"
-                                type="checkbox"
+                                type={inputType}
                                 value={`token${tokenId}`}
                                 onChange={this.handleTokenChange}/>
                             <label htmlFor={`token${tokenId}`} className="token-label">{match}</label>
@@ -78,7 +85,7 @@ export class Content extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.tokenizedContent !== this.state.tokenizedContent) {
-            this.fetchData(URLConstant.TOKEN_FETCH, this.restoreTokenState);
+            this.fetchData(URLConstant.TOKEN_FETCH + this.getTokenRelativeUrl(), this.restoreTokenState);
         }
     }
 
