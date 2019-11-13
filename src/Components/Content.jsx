@@ -36,6 +36,11 @@ export class Content extends React.Component {
         }).catch(err => console.log(err));
     }
 
+    isBakyTag(token) {
+        const vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'];
+        return vowels.includes(token[0]);
+    }
+
     tokenizedContent({content}) {
         let m;
         const tokenizedContent = [];
@@ -54,6 +59,11 @@ export class Content extends React.Component {
                     return;
                 } else if (groupIndex === 2) {
                     tokenId++;
+                    let tag = "";
+                    if (this.props.match.params.isTagOn === "true" && this.isBakyTag(match)) {
+                        tag = "baky-tag"
+                    }
+
                     tokenizedContent.push(
                         <span key={tokenId}>
                             <input
@@ -63,7 +73,7 @@ export class Content extends React.Component {
                                 type={inputType}
                                 value={`token${tokenId}`}
                                 onChange={this.handleTokenChange}/>
-                            <label htmlFor={`token${tokenId}`} className="token-label">{match}</label>
+                            <label htmlFor={`token${tokenId}`} className={`token-label ${tag}`}>{match}</label>
                         </span>
                     );
                     return;

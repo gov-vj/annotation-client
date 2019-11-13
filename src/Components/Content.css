@@ -5,3 +5,7 @@
 :checked + .token-label {
     color: goldenrod;
 }
+
+:checked + .token-label.baky-tag {
+    color: red;
+}
