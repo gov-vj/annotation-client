@@ -1,0 +1,23 @@
+.history {
+    flex: 1;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.history ul {
+    list-style-type:none;
+    padding: 0;
+}
+
+.history-item:hover {
+    background-color: red;
+}
+
+.history-item {
+    cursor: pointer;
+}
+
+.history-item-selected {
+    background-color: green;
+}

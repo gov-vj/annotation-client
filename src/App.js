@@ -10,7 +10,7 @@ function App() {
       <div className="App-main">
         <Switch>
           <Route path="/" exact component={Home} />
-          <Route path="/isMultiToken/:isMultiToken/isTagOn/:isTagOn" component={Content} />
+          <Route path="/isMultiToken/:isMultiToken/isTagOn/:isTagOn/isHistoryOn/:isHistoryOn" component={Content} />
         </Switch>
       </div>
     </div>

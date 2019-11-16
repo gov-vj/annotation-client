@@ -9,3 +9,26 @@
 :checked + .token-label.baky-tag {
     color: red;
 }
+
+#content-form {
+    flex: 4;
+    margin: 10px;
+}
+
+@media (max-width: 1100px) {
+    #content-form {
+        flex: 3;
+    }
+}
+
+@media (max-width: 880px) {
+    #content-form {
+        flex: 2;
+    }
+}
+
+@media (max-width: 680px) {
+    #content-form {
+        flex: 1;
+    }
+}

@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as URLConstant from "../Constants/URL";
+import { History } from "./History";
 import styles from './Content.css';
 
 export class Content extends React.Component {
@@ -7,8 +8,11 @@ export class Content extends React.Component {
         super(props);
         this.tokenizedContent = this.tokenizedContent.bind(this);
         this.handleTokenChange = this.handleTokenChange.bind(this);
+        this.handleHistoryClick = this.handleHistoryClick.bind(this);
         this.state = {
             tokenizedContent: '',
+            historyId: 'current',
+            histories: []
         };
     }
 
@@ -23,17 +27,39 @@ export class Content extends React.Component {
         return this.props.match.params.isMultiToken === "false" ? "/single" : "/multi";
     }
 
+    fetchHistoryIds() {
+        this.fetchData(
+            URLConstant.TOKEN_FETCH + this.getTokenRelativeUrl() + '/history',
+            histories => {
+                histories.length > 0 && (histories[0] = 'current');
+                this.setState({
+                    histories,
+                    historyId: 'current'
+                });
+            }
+        );
+    }
+
     handleTokenChange() {
         const form = document.getElementById('content-form');
         const formData = new FormData(form);
         const tokens = formData.getAll('tokens');
+        const historyId = +new Date();
         fetch(URLConstant.TOKEN_SAVE + this.getTokenRelativeUrl(), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({tokens})
-        }).catch(err => console.log(err));
+            body: JSON.stringify({tokens, historyId})
+        }).then(res => res.json())
+        .then(({success}) => {
+            if(!success) {
+                throw "Error saving data";
+            }
+
+            this.isHistoryOn() && this.fetchHistoryIds();
+        })
+        .catch(err => console.log(err));
     }
 
     isBakyTag(token) {
@@ -85,25 +111,60 @@ export class Content extends React.Component {
         this.setState({tokenizedContent});
     }
 
-    restoreTokenState({tokens}) {
+    setTokenState({tokens}) {
+        document.querySelectorAll('input:checked').forEach(token => token.checked = false);
         tokens && (tokens.forEach(token => document.getElementById(token).checked = true));
     }
 
     componentDidMount() {
         this.fetchData(URLConstant.CONTENT_FETCH, this.tokenizedContent);
+        this.isHistoryOn() && this.fetchHistoryIds();
+    }
+
+    fetchTokens(historyId) {
+        this.fetchData(
+            URLConstant.TOKEN_FETCH + this.getTokenRelativeUrl() + `/${historyId}`,
+            this.setTokenState
+        );
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.tokenizedContent !== this.state.tokenizedContent) {
-            this.fetchData(URLConstant.TOKEN_FETCH + this.getTokenRelativeUrl(), this.restoreTokenState);
+            this.fetchTokens(this.state.historyId);
         }
+    }
+
+    handleHistoryClick({target}) {
+        if(!target.classList.contains('history-item')) {
+            return;
+        }
+
+        this.fetchTokens(target.textContent);
+        this.setState({
+            historyId: target.textContent
+        });
+    }
+
+    isHistoryOn() {
+        return this.props.match.params.isHistoryOn === "true";
     }
 
     render() {
         return (
-            <form id="content-form">
-                {this.state.tokenizedContent}
-            </form>
+            <>
+                {
+                    this.isHistoryOn() ?
+                    <History
+                        histories={this.state.histories}
+                        historyId={this.state.historyId}
+                        onClick={this.handleHistoryClick}
+                    />
+                    : ""
+                }
+                <form id="content-form">
+                    {this.state.tokenizedContent}
+                </form>
+            </>
         );
     }
 }

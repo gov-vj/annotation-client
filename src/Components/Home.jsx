@@ -8,7 +8,8 @@ export class Home extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.state = {
             isMultiToken: false,
-            isTagOn: false
+            isTagOn: false,
+            isHistoryOn: false
         };
     }
 
@@ -21,7 +22,7 @@ export class Home extends React.Component {
 
     handleSubmit(ev) {
         ev.preventDefault();
-        this.props.history.push(`/isMultiToken/${this.state.isMultiToken}/isTagOn/${this.state.isTagOn}`);
+        this.props.history.push(`/isMultiToken/${this.state.isMultiToken}/isTagOn/${this.state.isTagOn}/isHistoryOn/${this.state.isHistoryOn}`);
     }
 
     render() {
@@ -39,6 +40,14 @@ export class Home extends React.Component {
                     question="Turn Baky/Kola tag on/off:"
                     name="isTagOn"
                     checked={this.state.isTagOn}
+                    handleInputChange={this.handleInputChange}
+                    option1="Off"
+                    option2="On"
+                />
+                <Question
+                    question="Turn history support on/off:"
+                    name="isHistoryOn"
+                    checked={this.state.isHistoryOn}
                     handleInputChange={this.handleInputChange}
                     option1="Off"
                     option2="On"
